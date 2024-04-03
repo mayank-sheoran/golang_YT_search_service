@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8090:8090"
+    depends_on:
+      - postgres
+      - elasticsearch
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=luffy
+      - POSTGRES_PASSWORD=luffy
+      - POSTGRES_DB=yt-search-service
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U luffy" ]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
