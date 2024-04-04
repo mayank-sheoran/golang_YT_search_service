@@ -5,6 +5,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/mayank-sheoran/golang_YT_search_service/cmd"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/db"
+	"github.com/mayank-sheoran/golang_YT_search_service/internal/service"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/utils"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/utils/log"
 )
@@ -24,6 +25,9 @@ func main() {
 
 	// start HTTP server
 	go cmd.StartServer(ctx)
+
+	// start YT search service
+	go service.NewYoutubeDataV3Client().Run()
 
 	// To keep the service running
 	select {}

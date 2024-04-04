@@ -40,6 +40,7 @@ func ConnectDatabase(ctx context.Context) {
 	dbname := os.Getenv(env.PostgresDatabase)
 	password := os.Getenv(env.PostgresPassword)
 	YtSearchServiceDb = connectToDb(user, password, dbname, host, port, ctx)
+	gormAutoMigrations(ctx)
 }
 
 func ConnectElasticSearch(ctx context.Context) {
