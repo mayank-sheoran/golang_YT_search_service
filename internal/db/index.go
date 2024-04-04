@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/common/enums/env"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/utils/log"
 	"gorm.io/driver/postgres"
@@ -15,7 +14,6 @@ import (
 
 var (
 	YtSearchServiceDb *gorm.DB
-	ElasticClient     *elasticsearch.Client
 )
 
 func connectToDb(user, password, dbname, host, port string, ctx context.Context) *gorm.DB {
@@ -41,14 +39,4 @@ func ConnectDatabase(ctx context.Context) {
 	password := os.Getenv(env.PostgresPassword)
 	YtSearchServiceDb = connectToDb(user, password, dbname, host, port, ctx)
 	gormAutoMigrations(ctx)
-}
-
-func ConnectElasticSearch(ctx context.Context) {
-	cfg := elasticsearch.Config{
-		Addresses: []string{"http://localhost:9200", "http://localhost:9300"},
-	}
-
-	esClient, err := elasticsearch.NewClient(cfg)
-	log.HandleError(err, ctx, true)
-	ElasticClient = esClient
 }

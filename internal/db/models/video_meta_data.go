@@ -6,11 +6,11 @@ import (
 )
 
 type VideoMetaData struct {
-	ID           string `gorm:"primarykey"`
-	Title        string
-	Description  string
-	PublishedAt  time.Time
-	ThumbnailURL string
+	ID           string    `gorm:"primarykey" json:"ID"`
+	Title        string    `json:"title"`
+	Description  string    `json:"description"`
+	PublishedAt  time.Time `json:"publishedAt"`
+	ThumbnailURL string    `json:"thumbnailUrl"`
 }
 
 func (VideoMetaData) TableName() string {

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/db"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/db/models"
@@ -34,15 +35,26 @@ var (
 	}
 )
 
+const (
+	quotaExceededError = "googleapi: Error 403: The request cannot be completed because you have exceeded your <a href=\"/youtube/v3/getting-started#quota\">quota</a>., quotaExceeded"
+)
+
 func NewYoutubeDataV3Client() *YoutubeDataService {
 	return client
 }
 
-func (yt *YoutubeDataService) Run() {
+func (yt *YoutubeDataService) setupNewApiKey() {
 	var err error
-	yt.Ctx = utils.GetContextWithFlowName(context.Background(), "Youtube Data service")
+	if len(yt.ApiKeys) == 0 {
+		log.HandleError(errors.New("No valid YT API key remaining"), yt.Ctx, true)
+	}
 	yt.Service, err = youtube.NewService(yt.Ctx, option.WithAPIKey(yt.ApiKeys[0]))
 	log.HandleError(err, yt.Ctx, true)
+}
+
+func (yt *YoutubeDataService) Run() {
+	yt.Ctx = utils.GetContextWithFlowName(context.Background(), "Youtube Data service")
+	yt.setupNewApiKey()
 	log.Info("Youtube Data service started", yt.Ctx)
 	for {
 		var videosMetaData []*models.VideoMetaData
@@ -76,7 +88,12 @@ func (yt *YoutubeDataService) fetchLatestVideos(keyword string) []*models.VideoM
 		MaxResults(10)
 	yt.LastFetchedAt = time.Now().Add(time.Second)
 	response, err := call.Do()
-	log.HandleError(err, yt.Ctx, false)
+	if err != nil && err.Error() == quotaExceededError {
+		log.Warn("Quote exceeded, changing API Key", yt.Ctx)
+		yt.ApiKeys = yt.ApiKeys[1:]
+		yt.setupNewApiKey()
+		yt.fetchLatestVideos(keyword)
+	}
 
 	var videosMetaData []*models.VideoMetaData
 	for _, item := range response.Items {
