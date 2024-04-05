@@ -13,15 +13,19 @@ type VideoSearchResponse struct {
 	Videos []models.VideoMetaData
 }
 
-func (vsr *VideoSearchResponse) Generate(searchQuery string, ctx context.Context) {
+func (vsr *VideoSearchResponse) Generate(searchQuery string, page, perPage int, ctx context.Context) {
 	if searchQuery == "" {
 		var videosMetaData []models.VideoMetaData
-		result := db.YtSearchServiceDb.Find(&videosMetaData, "1=1").Order("published_at desc")
+		result := db.YtSearchServiceDb.Model(&videosMetaData).
+			Order("created_at desc").
+			Offset((page - 1) * perPage).
+			Limit(perPage).
+			Find(&videosMetaData)
 		log.HandleError(result.Error, ctx, false)
 		vsr.Videos = videosMetaData
 		return
 	}
 	vsr.Videos = repository.VideoMetaDataIndexRepoClient.SearchInTitleAndDescription(
-		elastic_search.ElasticClient, searchQuery, ctx,
+		elastic_search.ElasticClient, searchQuery, page, perPage, ctx,
 	)
 }

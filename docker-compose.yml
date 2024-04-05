@@ -6,8 +6,14 @@ services:
     ports:
       - "8090:8090"
     depends_on:
-      - postgres
-      - elasticsearch
+      postgres:
+        condition: service_healthy
+        restart: true
+      elasticsearch:
+        condition: service_healthy
+        restart: true
+    networks:
+      - elasticnet
 
   postgres:
     image: postgres:latest
@@ -18,10 +24,12 @@ services:
       - POSTGRES_PASSWORD=luffy
       - POSTGRES_DB=yt-search-service
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U luffy" ]
+      test: [ "CMD-SHELL", "pg_isready -d yt-search-service" ]
       interval: 10s
       retries: 5
       timeout: 5s
+    networks:
+      - elasticnet
 
   elasticsearch:
     image: elasticsearch:8.13.0
@@ -29,7 +37,12 @@ services:
       http.host: 0.0.0.0
       transport.host: 127.0.0.1
       xpack.security.enabled: "false"
-      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      ES_JAVA_OPTS: -Xms256m -Xmx256m
+    healthcheck:
+      test: curl -s http://localhost:9200 >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 50
     ports:
       - "9200:9200"
     networks:

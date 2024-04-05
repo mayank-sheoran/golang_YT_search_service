@@ -8,6 +8,7 @@ import (
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/db/elastic_search"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/utils"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/utils/log"
+	"time"
 )
 
 func loadEnvFile(ctx context.Context) {
@@ -15,9 +16,16 @@ func loadEnvFile(ctx context.Context) {
 	log.HandleError(err, ctx, true)
 }
 
+func setServerTimeToIst(ctx context.Context) {
+	loc, err := time.LoadLocation("Asia/Kolkata")
+	log.HandleError(err, ctx, true)
+	time.Local = loc
+}
+
 func main() {
 	var ctx = utils.GetContextWithFlowName(context.Background(), "main")
 	loadEnvFile(ctx)
+	setServerTimeToIst(ctx)
 
 	// connect database and elastic data store
 	db.ConnectDatabase(utils.GetContextWithFlowName(ctx, "database connection"))

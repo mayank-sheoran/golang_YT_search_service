@@ -9,7 +9,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"os"
-	"time"
 )
 
 var (
@@ -28,10 +27,6 @@ func connectToDb(user, password, dbname, host, port string, ctx context.Context)
 }
 
 func ConnectDatabase(ctx context.Context) {
-	log.Info(
-		"5 second timeout for DB startup", ctx,
-	) // for some reason on docker-compose up postgres was starting after service even though it was added as dependency
-	time.Sleep(time.Second * 5)
 	user := os.Getenv(env.PostgresUser)
 	port := os.Getenv(env.PostgresPort)
 	host := os.Getenv(env.PostgresHost)

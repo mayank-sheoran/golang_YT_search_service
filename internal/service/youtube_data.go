@@ -104,8 +104,9 @@ func (yt *YoutubeDataService) fetchLatestVideos(keyword string) []*models.VideoM
 				ID:           item.Id.VideoId,
 				Title:        item.Snippet.Title,
 				Description:  item.Snippet.Description,
-				PublishedAt:  parsedTime,
+				PublishedAt:  parsedTime.Local(),
 				ThumbnailURL: item.Snippet.Thumbnails.Default.Url,
+				CreatedAt:    time.Now(),
 			},
 		)
 	}

@@ -14,16 +14,16 @@ import (
 
 func (ess *EsSyncronizations) SyncVideosMetaDataIndex(client *elasticsearch.Client, ctx context.Context) {
 	for {
-		latestPublishedAtPresent := repository.VideoMetaDataIndexRepoClient.GetLatestPublishedAtInVideosMetaDataIndex(
+		latestCreatedAtPresent := repository.VideoMetaDataIndexRepoClient.GetLatestCreatedAtInVideosMetaDataIndex(
 			client, ctx,
 		)
 		var videosMetaData []models.VideoMetaData
-		result := db.YtSearchServiceDb.Find(&videosMetaData, "published_at > ?", latestPublishedAtPresent)
+		result := db.YtSearchServiceDb.Find(&videosMetaData, "created_at > ?", latestCreatedAtPresent)
 		log.HandleError(result.Error, ctx, false)
 
 		var buf bytes.Buffer
 		if len(videosMetaData) == 0 {
-			time.Sleep(time.Second * 10)
+			time.Sleep(time.Second * 3)
 			continue
 		}
 
@@ -54,6 +54,6 @@ func (ess *EsSyncronizations) SyncVideosMetaDataIndex(client *elasticsearch.Clie
 		} else {
 			log.Info("Bulk push completed successfully for videos_meta_data | Elastic search", ctx)
 		}
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 3)
 	}
 }

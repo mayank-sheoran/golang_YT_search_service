@@ -7,4 +7,5 @@ const (
 	PostgresUser     = "POSTGRES_USER"
 	PostgresPassword = "POSTGRES_PASSWORD"
 	PostgresDatabase = "POSTGRES_DB"
+	ElasticSearchUrl = "ELASTIC_SEARCH_URL"
 )

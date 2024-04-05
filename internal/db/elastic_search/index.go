@@ -3,8 +3,10 @@ package elastic_search
 import (
 	"context"
 	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/mayank-sheoran/golang_YT_search_service/internal/common/enums/env"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/db/elastic_search/syncronizations"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/utils/log"
+	"os"
 )
 
 type ElasticSearch struct{}
@@ -15,7 +17,7 @@ var (
 
 func (es *ElasticSearch) Init(ctx context.Context) {
 	cfg := elasticsearch.Config{
-		Addresses: []string{"http://localhost:9200"},
+		Addresses: []string{os.Getenv(env.ElasticSearchUrl)},
 	}
 
 	esClient, err := elasticsearch.NewClient(cfg)

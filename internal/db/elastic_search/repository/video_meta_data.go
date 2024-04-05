@@ -21,7 +21,7 @@ var (
 )
 
 func (vmdir *VideoMetaDataIndexRepository) SearchInTitleAndDescription(
-	esClient *elasticsearch.Client, searchQuery string, ctx context.Context,
+	esClient *elasticsearch.Client, searchQuery string, page, perPage int, ctx context.Context,
 ) []models.VideoMetaData {
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
@@ -30,6 +30,15 @@ func (vmdir *VideoMetaDataIndexRepository) SearchInTitleAndDescription(
 				"fields": []string{"title", "description"},
 			},
 		},
+		"sort": []map[string]interface{}{
+			{
+				"createdAt": map[string]interface{}{
+					"order": "desc",
+				},
+			},
+		},
+		"from": (page - 1) * perPage,
+		"size": perPage,
 	}
 	queryJSON, err := json.Marshal(query)
 	log.HandleError(err, ctx, false)
@@ -54,29 +63,34 @@ func (vmdir *VideoMetaDataIndexRepository) SearchInTitleAndDescription(
 	for _, hit := range hits {
 		source := hit.(map[string]interface{})["_source"].(map[string]interface{})
 		publishedAtStr := source["publishedAt"].(string)
+		createdAtStr := source["createdAt"].(string)
 		publishedAt, err := time.Parse(time.RFC3339, publishedAtStr)
 		log.HandleError(err, ctx, false)
+		createdAt, err := time.Parse(time.RFC3339, createdAtStr)
+		log.HandleError(err, ctx, false)
+
 		videoMetaData := models.VideoMetaData{
 			ID:           source["ID"].(string),
 			Title:        source["title"].(string),
 			Description:  source["description"].(string),
 			PublishedAt:  publishedAt,
 			ThumbnailURL: source["thumbnailUrl"].(string),
+			CreatedAt:    createdAt,
 		}
 		videosMetaData = append(videosMetaData, videoMetaData)
 	}
 	return videosMetaData
 }
 
-func (vmdir *VideoMetaDataIndexRepository) GetLatestPublishedAtInVideosMetaDataIndex(
+func (vmdir *VideoMetaDataIndexRepository) GetLatestCreatedAtInVideosMetaDataIndex(
 	client *elasticsearch.Client, ctx context.Context,
 ) time.Time {
 	var defaultTime time.Time
 	defaultTime, _ = time.Parse("2006-01-02", "1900-01-01")
 	query := `{
         "size": 1,
-        "sort": [{ "publishedAt": { "order": "desc" }}],
-        "_source": ["publishedAt"]
+        "sort": [{ "createdAt": { "order": "desc" }}],
+        "_source": ["createdAt"]
     }`
 	res, err := client.Search(
 		client.Search.WithContext(ctx),
@@ -97,12 +111,12 @@ func (vmdir *VideoMetaDataIndexRepository) GetLatestPublishedAtInVideosMetaDataI
 	if len(hits) > 0 {
 		firstHit := hits[0].(map[string]interface{})
 		source := firstHit["_source"].(map[string]interface{})
-		publishedAtStr := source["publishedAt"].(string)
-		publishedAt, err := time.Parse(time.RFC3339, publishedAtStr)
+		createdAtStr := source["createdAt"].(string)
+		createdAt, err := time.Parse(time.RFC3339Nano, createdAtStr)
 		if err != nil {
 			return defaultTime
 		}
-		return publishedAt
+		return createdAt.Add(time.Millisecond * 100)
 	}
 	return defaultTime
 }

@@ -11,6 +11,7 @@ type VideoMetaData struct {
 	Description  string    `json:"description"`
 	PublishedAt  time.Time `json:"publishedAt"`
 	ThumbnailURL string    `json:"thumbnailUrl"`
+	CreatedAt    time.Time `json:"createdAt"`
 }
 
 func (VideoMetaData) TableName() string {
