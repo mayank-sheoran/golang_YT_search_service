@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/api/routes/health_check"
+	"github.com/mayank-sheoran/golang_YT_search_service/internal/api/routes/yt_search"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/utils"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/utils/log"
 )
@@ -11,5 +12,6 @@ import (
 func HandleRoutes(router *gin.Engine, ctx context.Context) {
 	ctx = utils.GetContextWithFlowName(ctx, "routes setup")
 	health_check.Handler(router)
+	yt_search.Handler(router, ctx)
 	log.Info("all routes are active.", ctx)
 }
