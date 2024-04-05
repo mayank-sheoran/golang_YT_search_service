@@ -18,7 +18,7 @@ Go-based service allows users to search for YouTube videos efficiently using **e
    docker-compose build
 4. **Run the Docker containers:**
    Start the containers with Docker Compose
-    ```
+    ```bash
    docker-compose up -d
    ```
 ## Accessing the Service

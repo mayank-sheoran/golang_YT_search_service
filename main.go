@@ -6,6 +6,7 @@ import (
 	"github.com/mayank-sheoran/golang_YT_search_service/cmd"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/db"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/db/elastic_search"
+	"github.com/mayank-sheoran/golang_YT_search_service/internal/service"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/utils"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/utils/log"
 	"time"
@@ -36,7 +37,7 @@ func main() {
 	go cmd.StartServer(ctx)
 
 	// start YT search service
-	// go service.NewYoutubeDataV3Client().Run()
+	go service.NewYoutubeDataV3Client().Run()
 
 	// To keep the service running
 	select {}

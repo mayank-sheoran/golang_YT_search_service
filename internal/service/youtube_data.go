@@ -31,7 +31,7 @@ var (
 		PreDefinedKeywords: []string{
 			"gaming", "news",
 		},
-		ApiKeys:       []string{os.Getenv(env.YtApiKey)},
+		ApiKeys:       []string{"API-0", "API-1", "API-2"},
 		FetchInterval: time.Minute,
 		LastFetchedAt: time.Now().Add(time.Minute * -1),
 	}
@@ -56,6 +56,7 @@ func (yt *YoutubeDataService) setupNewApiKey() {
 
 func (yt *YoutubeDataService) Run() {
 	yt.Ctx = utils.GetContextWithFlowName(context.Background(), "Youtube Data service")
+	yt.ApiKeys[0] = os.Getenv(env.YtApiKey)
 	yt.setupNewApiKey()
 	log.Info("Youtube Data service started", yt.Ctx)
 	for {
