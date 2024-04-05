@@ -1,34 +1,46 @@
-## YouTube Search Service
+# YouTube Search Service
 
-This is a GO-lang service that allows users to search for YouTube videos. 
+Go-based service allows users to search for YouTube videos efficiently using **elastic search** and **postgres**. It utilizes Docker for containerization, ensuring an isolated and consistent environment for running the service.
 
-## Instructions
+## Prerequisites
 
-To run the service, follow these steps:
+- Docker
+- YouTube API key
 
-1. First, navigate to the root directory of the project in your terminal.
+## Setup
 
-2. Build the Docker image using the following command:
-    ```bash
-    docker build -t yt_search_service .
+1. **Clone the project:** Clone the repository to your local machine and navigate to the project's root directory in your terminal.
+
+2. **Configure API keys:** Enter your YouTube API key in the `.ENV` file. For multiple API keys, add them in `/internal/service/youtube_data` on line 34.
+
+3. **Build the Docker image:** Use the following command to build the Docker image:
+   ```bash
+   docker-compose build
+4. **Run the Docker containers:**
+   Start the containers with Docker Compose
     ```
+   docker-compose up -d
+   ```
+## Accessing the Service
 
-3. Run the Docker container, binding port 8090 of the container to port 8090 of your host machine, and giving the container a name:
-    ```bash
-    docker run -p 8090:8090 --name yt_search_service yt_search_service
-    ```
+Once the service is running, you can access it at `http://localhost:8090`.
 
-These commands will build the Docker image for your YouTube search service and then run a container from it. You can access the service at `http://localhost:8090` once it's up and running.
+### Postman collection
+https://drive.google.com/file/d/1be2noJtrrlXaKZHrzzFb6_Uq_tCS3tNI/view
 
-## Usage
+### Endpoints
 
-Once the service is running, you can use it to search for YouTube videos. You can interact with the service via HTTP requests. Here's an example:
-
+#### Health Check
 - **Endpoint**: `http://localhost:8090/health`
 - **Method**: GET
-  - This endpoint returns a 200 OK response if the service is healthy.
+    - Returns a 200 OK response if the service is healthy.
+
+#### Search for Videos
+- **Endpoint**: `http://localhost:8090/videos/search?search-query=<QUERY>&page-number=<PAGE_NUMBER>&page-limit=<PAGE_LIMIT>`
+- **Method**: GET
+    - Searches for videos related to the specified query. If no query is specified, it returns all videos in a paginated format. Default settings are `page-number=1` and `page-limit=100`.
 
 ## Dependencies
+- **Docker**: Used for creating a consistent running environment for the service.
 
-This service is built using Go programming language. It uses Docker for containerization. Make sure you have Docker installed on your system before running the service.
 

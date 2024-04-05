@@ -4,12 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/mayank-sheoran/golang_YT_search_service/internal/common/enums/env"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/db"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/db/models"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/utils"
 	"github.com/mayank-sheoran/golang_YT_search_service/internal/utils/log"
 	"google.golang.org/api/option"
 	"google.golang.org/api/youtube/v3"
+	"os"
 	"time"
 )
 
@@ -29,7 +31,7 @@ var (
 		PreDefinedKeywords: []string{
 			"gaming", "news",
 		},
-		ApiKeys:       []string{},
+		ApiKeys:       []string{os.Getenv(env.YtApiKey)},
 		FetchInterval: time.Minute,
 		LastFetchedAt: time.Now().Add(time.Minute * -1),
 	}
