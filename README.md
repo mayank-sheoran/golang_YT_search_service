@@ -2,6 +2,9 @@
 
 Go-based service allows users to search for YouTube videos efficiently using **elastic search** and **postgres**. It utilizes Docker for containerization, ensuring an isolated and consistent environment for running the service.
 
+## Demo video
+https://youtu.be/eNlZf3WAQPA
+
 ## Prerequisites
 
 - Docker
